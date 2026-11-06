@@ -1,0 +1,158 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- 脚本插件仅在 API 26+ 注册，保留原应用 API 24 的安装兼容性。 -->
+    <uses-sdk tools:overrideLibrary="androidx.javascriptengine"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <application
+        android:label="${appLabel}"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Inbound deep links: `mconnect://song?…` / `mconnect://playlist?…`
+                 (the links this app shares, flowing back in) and the
+                 `mconnect://share?text=…` bridge below. A custom scheme needs no
+                 host verification and no https domain, which is why there is no
+                 `android:autoVerify` / `android:host` here. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="mconnect"/>
+            </intent-filter>
+            <!-- Home-screen widget clicks (W3-A). The plugin starts THIS activity
+                 with the custom action `es.antonborri.home_widget.action.LAUNCH`
+                 and a `mconnect://widget/...` URI; `app_links` only listens for
+                 ACTION_VIEW, so the two paths cannot double-fire. `singleTop`
+                 above is what makes an already-running app receive the click
+                 through onNewIntent instead of a second activity instance. -->
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.LAUNCH" />
+            </intent-filter>
+        </activity>
+        <!-- Receives "share to Mconnect" (ACTION_SEND, text/plain) from other
+             apps and forwards it as an `mconnect://share?text=…` deep link, so
+             the Dart side can route it. Kept as its own no-UI activity so
+             MainActivity's activity-result handling (local music scan) stays
+             untouched. -->
+        <activity
+            android:name=".ShareIntentHandler"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+        </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+        <!-- W3-A: home-screen widget (RemoteViews). `android:exported="true"` is
+             mandatory from API 31 on; omitting it is an INSTALL-time failure, not a
+             runtime one. The provider renders straight from SharedPreferences, so
+             it keeps working while the Flutter process is dead. -->
+        <receiver
+            android:name=".MconnectWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/mconnect_widget_info" />
+        </receiver>
+        <!-- W3-A: Android Auto media app declaration (fixes Play EP-1/EP-2 only
+             together with a real browse tree — see lib/core/android_auto/).
+             `androidx.car.app` is NOT needed: a media app is discovered through the
+             MediaBrowserService that audio_service already declares above. -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
+
+         NOTE: the manifest schema allows **at most one** <queries> element, so every
+         package-visibility entry must live inside this block. Adding a second one is an
+         aapt2/merger error, not a "harmless duplicate". -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Android 11+ (API 30) package visibility: without this, url_launcher's
+             `launchUrl()` silently resolves to nothing — no exception, no browser.
+             Needed for the Last.fm / ListenBrainz authorization page (W2-D scrobble)
+             and for any "open the project page / open a share link" action. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+</manifest>

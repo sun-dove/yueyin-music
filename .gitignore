@@ -1,0 +1,166 @@
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.atom/
+.history/
+.svn/
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+!.idea/runConfigurations/
+
+# VS Code personal workspace state
+.vscode/*
+!.vscode/extensions.json
+
+# Flutter / Dart / Pub generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Build, test and coverage outputs
+/build/
+/coverage/
+windows/flutter/ephemeral/
+*.pdb
+*.apk
+*.aab
+*.apks
+*.symbols
+app.*.symbols
+app.*.map.json
+
+# Android local/generated files
+/android/.gradle/
+/android/.kotlin/
+/android/.cxx/
+/android/captures/
+/android/local.properties
+/android/app/build/
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+
+# Signing keys and local secrets
+key.properties
+**/key.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+.env
+.env.*
+!.env.example
+*.cookie
+*.cookies
+*.token
+*.session
+*.secret
+
+# Runtime data copied from devices/emulators
+logs/
+*.log
+mconnect.log
+downloads/
+download/
+Download/
+Downloads/
+!lib/features/download/
+!lib/features/download/**
+music/
+Music/
+local_music/
+!lib/features/local_music/
+!lib/features/local_music/**
+LocalMusic/
+playlists/
+exports/
+# Anchored to the repository root. Unanchored, `backup/` matched a directory of
+# that name at ANY depth and silently swallowed the source directory
+# `lib/features/backup/` (the whole backup/restore feature, which
+# `lib/core/router/app_router.dart` imports - so a fresh clone would not have
+# compiled). The negations below follow the precedent already set for
+# `local_music/` two lines up.
+/backup/
+/backups/
+!lib/features/backup/
+!lib/features/backup/**
+device_data/
+app_flutter/
+shared_prefs/
+databases/
+files/
+cache/
+cookies/
+sessions/
+tokens/
+account/
+accounts/
+*.db
+*.sqlite
+*.sqlite3
+*.hive
+*.hive.lock
+*.mp3
+*.flac
+*.wav
+*.m4a
+*.aac
+*.ogg
+*.opus
+*.ape
+*.wma
+*.lrc
+*.krc
+*.qrc
+*.m3u
+*.m3u8
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+*.bak
+*.backup
+*.jsonl
+*account*.json
+*accounts*.json
+*cookie*.json
+*cookies*.json
+*session*.json
+*sessions*.json
+*token*.json
+*tokens*.json
+
+# Agent planning docs that stay local
+#
+# PROJECT.md / CHANGELOG.md deliberately are NOT in this list any more: they carry
+# two of the seven version-sync points in AGENTS.md §2, and while they were
+# untracked neither CI nor a fresh clone could see them — `version_sync_test.dart`
+# could only check them "when present", which is how they drifted unnoticed.
+# `/docs/superpowers/` is still local-only.
+/docs/superpowers/
+
+# Local migration or temporary work folders
+.build/
+.buildlog/
+.swiftpm/
+migrate_working_dir/
+
+# Android Gradle 构建产物
+android/build/
+
+# ZCode 会话规划文件
+.zcode/

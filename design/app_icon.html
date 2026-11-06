@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mconnect 图标 · 设计稿</title>
+<style>
+  :root {
+    /* Brand seed, taken from the app: lib/core/theme/app_theme.dart */
+    --brand: #E91E63;
+    --ink: #E8EAF6;
+    --ink-dim: #8B90B5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #07080F; color: var(--ink);
+    font: 15px/1.6 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; gap: 38px; padding: 46px 24px 70px;
+  }
+  h1 { font-size: 19px; margin: 0; }
+  h2 { font-size: 12.5px; font-weight: 600; margin: 0 0 14px;
+       letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-dim); }
+  #mark { width: 320px; height: 320px; display: block; border-radius: 22.5%; }
+  .panel { background: #0E1018; border: 1px solid #1E2233;
+           border-radius: 18px; padding: 28px 32px; }
+  .sizes { display: flex; align-items: flex-end; gap: 26px; flex-wrap: wrap; }
+  .size { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .size svg { display: block; border-radius: 22.5%; }
+  .size span { font-size: 11px; color: var(--ink-dim); }
+  .contexts { display: flex; gap: 22px; flex-wrap: wrap; }
+  .ctx { width: 92px; height: 92px; border-radius: 26px; display: grid;
+         place-items: center; background: linear-gradient(145deg, #1A1F33, #0C0F1A);
+         border: 1px solid #232840; }
+  .ctx.round { border-radius: 50%; }
+  .ctx.light { background: linear-gradient(145deg, #F3F4F8, #DDE0EA);
+               border-color: #C7CBD8; }
+  .notes { max-width: 780px; font-size: 13.5px; color: var(--ink-dim); }
+  .notes b { color: var(--ink); font-weight: 600; }
+  .notes ul { margin: 10px 0 0; padding-left: 20px; }
+  .notes li { margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<h1>Mconnect · 应用图标设计稿</h1>
+
+<!-- =====================================================================
+     The master artwork. Everything else reuses this exact SVG, so no
+     preview can drift from what actually ships.
+     ===================================================================== -->
+<svg id="mark" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"
+     role="img" aria-label="Mconnect">
+  <defs>
+    <!-- One background gradient, two stops: "keep gradients to one or two steps". -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0.65" y2="1">
+      <stop offset="0" stop-color="#161B33"/>
+      <stop offset="1" stop-color="#0A0D18"/>
+    </linearGradient>
+
+    <!-- The M carries the three platforms it aggregates. Colours are the ones the
+         app already uses for these platforms (lib/features/auth/presentation/
+         pages/login_page.dart), so the icon and the UI cannot drift apart.
+
+         How the bands meet, and why there are five colours rather than three:
+
+         * **The boundaries are slanted.** A gradient in objectBoundingBox runs
+           along a vector whose slope depends on the box's aspect ratio, so
+           `x1/y1 -> x2/y2` are computed for the M's box (w=220, h=234) instead of
+           being written as round numbers.
+         * **Each seam passes through an intermediate hue.** Interpolating
+           red -> green in RGB crosses the complementary axis and goes through
+           muddy grey, which is what made the first attempts look harsh. Routing
+           red -> **yellow** -> green and green -> **cyan** -> blue keeps each jump
+           inside one neighbouring pair of hues.
+         * **The seams are wide — about 18% of the axis each.** They were 12% at
+           first and still read as a band change rather than a blend. Because the
+           intermediates carry the hue across, the zones can be wide without going
+           muddy: that is what makes the wider fade affordable. -->
+    <linearGradient id="trio"
+                    x1="0.1743" y1="0.0993"
+                    x2="0.8257" y2="0.9007">
+      <stop offset="0.180" stop-color="#E60026"/>   <!-- Netease            -->
+      <stop offset="0.270" stop-color="#F5A623"/>   <!-- red    -> yellow   -->
+      <stop offset="0.360" stop-color="#31C27C"/>   <!-- QQ Music           -->
+      <stop offset="0.640" stop-color="#31C27C"/>
+      <stop offset="0.730" stop-color="#3ED8D8"/>   <!-- green  -> cyan     -->
+      <stop offset="0.820" stop-color="#2CA2F9"/>   <!-- Kugou              -->
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="115" fill="url(#bg)"/>
+
+  <!-- ── the mark ─────────────────────────────────────────────────────
+       The M is split into three equal diagonal bands, one per platform.
+       The white play triangle then sits in the M's counter as a solid
+       shape, which is the arrangement that read correctly: cutting the
+       triangle out of the M did not work, because an M has no wide white
+       field in its centre and the cut either clipped on the diagonals or
+       forced the letterform into an "H with a jaw". -->
+  <path fill="url(#trio)" fill-rule="evenodd" d="
+    M 146 372
+    L 146 138
+    L 186 138
+    L 256 268
+    L 326 138
+    L 366 138
+    L 366 372
+    L 323 372
+    L 323 266
+    L 280 320
+    L 232 320
+    L 189 266
+    L 189 372
+    Z"/>
+
+  <!-- The play triangle, centred in the M's lower counter. It has to sit
+       *below* the V-junction: higher up and it overlaps the apex and starts
+       to look like a chipped letterform instead of a control. -->
+  <path d="M 234 292 L 234 352 L 290 322 Z" fill="#FFFFFF"/>
+</svg>
+</svg>
+
+<div class="panel">
+  <h2>同一矢量，不同尺寸</h2>
+  <div class="sizes" id="sizeRow"></div>
+</div>
+
+<div class="panel">
+  <h2>启动器情境（深色 / 圆形 / 浅色）</h2>
+  <div class="contexts" id="ctxRow"></div>
+</div>
+
+<div class="notes">
+  <b>方案 C：M 的负形即播放键</b>
+  <ul>
+    <li>整个图标是<b>一个白色剪影</b>：M 与播放三角不是两层叠加，三角是 M 上挖出的洞。</li>
+    <li>去掉三道彩环、金色三角、粉色节点、暗角、顶部高光、外描边与投影 —— 从 4 类图形降到 1 个。</li>
+    <li>渐变从 5 个降到 <b>1 个</b>（两档），符合“渐变克制”的要求。</li>
+    <li>底色沿用原有深蓝紫，保留与旧图标的连续性。</li>
+    <li>纯白标志带来最高对比度，且在任何底色（含浅色启动器）上都成立。</li>
+  </ul>
+</div>
+
+<script>
+  const master = document.getElementById('mark');
+
+  // ------------------------------------------------------------------
+  // Export modes, driven by the URL fragment (a fragment, not a query
+  // string: `file://` treats `?x` as part of the path and Chrome then
+  // browses the directory instead of rendering the page).
+  //
+  //   #full     rounded plate — Android legacy icon and the web icons
+  //   #android  square plate, no radius — Android's adaptive mask cuts it
+  //   #fg       artwork at ~2/3 on transparency — adaptive foreground
+  //   #splash   artwork at ~2/3 on transparency with a soft white halo
+  //   (none)    this design sheet
+  // ------------------------------------------------------------------
+  const mode = location.hash.replace('#', '') || 'sheet';
+
+  if (mode !== 'sheet') {
+    document.body.style.cssText =
+      'margin:0;padding:0;display:block;background:transparent;min-height:0';
+    for (const el of document.querySelectorAll('body > *')) {
+      if (el !== master) el.remove();
+    }
+    master.style.cssText = 'width:100vw;height:100vh;display:block;border-radius:0';
+
+    if (mode === 'android') {
+      // The launcher mask supplies the shape, so the plate must be square.
+      for (const r of master.querySelectorAll(':scope > rect')) {
+        r.removeAttribute('rx');
+      }
+    }
+
+    if (mode === 'fg' || mode === 'splash') {
+      // Both modes are composited onto something else — an adaptive background
+      // layer, or the native splash's flat colour — so the plate has to go. A
+      // plate baked in here would show around the mask on the launcher, and on
+      // the splash it would read as a second plate inside the splash colour.
+      for (const r of Array.from(master.querySelectorAll(':scope > rect'))) {
+        r.remove();
+      }
+      const art = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      art.setAttribute('transform',
+        'translate(256 256) scale(0.68) translate(-256 -256)');
+      for (const node of Array.from(master.children)) {
+        if (node.tagName !== 'defs') art.appendChild(node);
+      }
+      master.appendChild(art);
+    }
+
+    if (mode === 'splash') {
+      // The splash colour is #101522 (pubspec.yaml). The M's gradient ends in
+      // Kugou blue, which would sink into that colour, so the mark gets a soft
+      // white halo rather than a plate: a halo keeps all three platform colours
+      // legible on dark without becoming a visible card in the middle of the
+      // splash. The halo is an ellipse behind the mark, blurred.
+      master.insertAdjacentHTML(
+        'afterbegin',
+        `<defs><filter id="halo" x="-60%" y="-60%" width="220%" height="220%">
+           <feGaussianBlur stdDeviation="34"/>
+         </filter></defs>
+         <ellipse cx="256" cy="256" rx="196" ry="182"
+                  fill="#FFFFFF" fill-opacity="0.17" filter="url(#halo)"/>
+         <ellipse cx="256" cy="256" rx="150" ry="138"
+                  fill="#FFFFFF" fill-opacity="0.12" filter="url(#halo)"/>`,
+      );
+    }
+  }
+
+  function cloneMark(size) {
+    const node = master.cloneNode(true);
+    node.removeAttribute('id');
+    node.removeAttribute('style');
+    node.setAttribute('width', size);
+    node.setAttribute('height', size);
+    return node;
+  }
+
+  const sizeRow = document.getElementById('sizeRow');
+  for (const s of [512, 256, 128, 64, 48, 32, 24, 16]) {
+    const box = document.createElement('div');
+    box.className = 'size';
+    box.appendChild(cloneMark(s));
+    const label = document.createElement('span');
+    label.textContent = s + 'px';
+    box.appendChild(label);
+    sizeRow.appendChild(box);
+  }
+
+  const ctxRow = document.getElementById('ctxRow');
+  for (const cls of ['', 'round', 'light']) {
+    const tile = document.createElement('div');
+    tile.className = 'ctx ' + cls;
+    tile.appendChild(cloneMark(72));
+    ctxRow.appendChild(tile);
+  }
+</script>
+</body>
+</html>
